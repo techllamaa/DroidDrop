@@ -1,2 +1,2 @@
 # DroidDrop
-The speed and ease of use of Airdrop on Android!
+The speed and ease of use of AirDrop on Android!
