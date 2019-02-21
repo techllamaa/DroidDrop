@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">DroidDrop</string>
+    <string name="testing_txt">~( ^ . ^ )~</string>
+    <string name="button_saved">\"send\"</string>
+    <string name="connect_button" translatable="false">\"connect\"</string>
+    <string name="not_connected" translatable="false">not connected</string>
+</resources>
