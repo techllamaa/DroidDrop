@@ -94,6 +94,29 @@ public class MainActivity extends ConnectionsActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        setState(State.SEARCHING);
+    }
+
+    @Override
+    protected void onStop() {
+        setState(State.UNKNOWN);
+
+        super.onStop();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getState() == State.CONNECTED) {
+            setState(State.SEARCHING);
+            return;
+        }
+        super.onBackPressed();
+    }
+
+    @Override
     protected void onEndpointDiscovered(Endpoint endpoint) {
         stopDiscovering();
         connectToEndpoint(endpoint);
@@ -131,8 +154,6 @@ public class MainActivity extends ConnectionsActivity {
     }
 
     /**
-     * The state has changed. I wonder what we'll be doing now.
-     *
      * @param state The new state.
      */
     private void setState(State state) {
@@ -153,7 +174,6 @@ public class MainActivity extends ConnectionsActivity {
     }
 
     /**
-     * State has changed.
      *
      * @param oldState The previous state we were in. Clean up anything related to this state.
      * @param newState The new state we're now in. Prepare the UI for this state.
@@ -210,7 +230,6 @@ public class MainActivity extends ConnectionsActivity {
         }
     }
 
-    /** Transitions from the old state to the new state with an animation implying moving forward. */
     @UiThread
     private void transitionForward(State oldState, final State newState) {
         mPreviousStateView.setVisibility(View.VISIBLE);
@@ -232,7 +251,6 @@ public class MainActivity extends ConnectionsActivity {
         }
     }
 
-    /** Transitions from the old state to the new state with an animation implying moving backward. */
     @UiThread
     private void transitionBackward(State oldState, final State newState) {
         mPreviousStateView.setVisibility(View.VISIBLE);
@@ -299,7 +317,7 @@ public class MainActivity extends ConnectionsActivity {
         return animator;
     }
 
-    /** Updates the {@link TextView} with the correct color/text for the given {@link State}. */
+    /** Updates colors for UI */
     @UiThread
     private void updateTextView(TextView textView, State state) {
         switch (state) {
@@ -316,6 +334,11 @@ public class MainActivity extends ConnectionsActivity {
                 textView.setText(R.string.status_unknown);
                 break;
         }
+    }
+
+    @Override
+    protected String[] getRequiredPermissions() {
+        return super.getRequiredPermissions();
     }
 
 
@@ -392,6 +415,7 @@ public class MainActivity extends ConnectionsActivity {
         CONNECTED
     }
 
+    /** Allows us to override methods needed for UI */
     private abstract static class AnimatorListener implements Animator.AnimatorListener {
         @Override
         public void onAnimationStart(Animator animator) {}
