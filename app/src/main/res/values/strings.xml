@@ -1,7 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">DroidDrop</string>
-    <string name="testing_txt">~( ^ . ^ )~</string>
-    <string name="button_saved">\"send\"</string>
-    <string name="connect_button" translatable="false">\"connect\"</string>
-    <string name="not_connected" translatable="false">not connected</string>
+    <string name="error_missing_permissions">Cannot start without required permissions</string>
+
+    <string name="toast_connected">Connected to %s</string>
+    <string name="toast_disconnected">Disconnected from %s</string>
+
+    <string name="status_unknown">Please wait</string>
+    <string name="status_connected">Connected\nHold any of the volume keys to talk</string>
 </resources>
