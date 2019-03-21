@@ -6,39 +6,102 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/button2"
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabNearBy"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="36dp"
-        android:onClick="connectButton"
-        android:text="@string/connect_button"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="32dp"
+        android:clickable="true"
+        android:src="@drawable/ic_people_black_24dp"
+        app:backgroundTint="@color/colorPrimary"
+        app:fabSize="normal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="95dp"
-        android:layout_height="89dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginTop="132dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@color/colorAccent"
+        app:rippleColor="@color/common_google_signin_btn_text_dark_focused"
         tools:srcCompat="@tools:sample/avatars" />
 
-    <TextView
-        android:id="@+id/textView2"
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="168dp"
-        android:text="Not-connected"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="20dp" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="20dp" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="24dp"
+        android:clickable="true"
+        android:visibility="invisible"
+        app:backgroundTint="@color/common_google_signin_btn_text_dark_disabled"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toTopOf="@+id/fabNearBy"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:useCompatPadding="false"
+        tools:fab_icon="@tools:sample/avatars[3]" />
+
+    <android.support.design.widget.TabLayout
+        android:layout_width="363dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/not_connected" />
+        app:tabIndicatorColor="@color/common_google_signin_btn_text_dark_default">
+
+        <android.support.design.widget.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Monday" />
+
+        <android.support.design.widget.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tuesday" />
+
+        <android.support.design.widget.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Wednesday" />
+    </android.support.design.widget.TabLayout>
+
+    <TextView
+        android:id="@+id/device1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="124dp"
+        android:text="@string/device_1"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/fab_user" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_device2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="24dp"
+        android:clickable="true"
+        android:visibility="invisible"
+        app:backgroundTint="@color/common_google_signin_btn_text_dark_disabled"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toTopOf="@+id/fab_user"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:srcCompat="@tools:sample/avatars" />
+
 
 </android.support.constraint.ConstraintLayout>
