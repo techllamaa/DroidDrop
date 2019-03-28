@@ -32,6 +32,9 @@ public class MainActivity extends AppCompatActivity{
         setupViewPager(viewPager);
         tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
+        tabLayout.getTabAt(0).setText("Shared");
+        tabLayout.getTabAt(1).setText("Received");
+
 
         fab = findViewById(R.id.fab);
         final TextView txt = findViewById(R.id.fab_txt);
