@@ -6,102 +6,138 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabNearBy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="32dp"
-        android:clickable="true"
-        android:src="@drawable/ic_people_black_24dp"
-        app:backgroundTint="@color/colorPrimary"
-        app:fabSize="normal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:rippleColor="@color/common_google_signin_btn_text_dark_focused"
-        tools:srcCompat="@tools:sample/avatars" />
-
-    <android.support.constraint.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="20dp" />
-
-    <android.support.constraint.Guideline
-        android:id="@+id/guideline2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="20dp" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_user"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
-        android:layout_marginBottom="24dp"
-        android:clickable="true"
-        android:visibility="invisible"
-        app:backgroundTint="@color/common_google_signin_btn_text_dark_disabled"
-        app:fabSize="mini"
-        app:layout_constraintBottom_toTopOf="@+id/fabNearBy"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:useCompatPadding="false"
-        tools:fab_icon="@tools:sample/avatars[3]" />
-
-    <android.support.design.widget.TabLayout
-        android:layout_width="363dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tabIndicatorColor="@color/common_google_signin_btn_text_dark_default">
-
-        <android.support.design.widget.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Monday" />
-
-        <android.support.design.widget.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tuesday" />
-
-        <android.support.design.widget.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Wednesday" />
-    </android.support.design.widget.TabLayout>
-
     <TextView
-        android:id="@+id/device1"
+        android:id="@+id/fab_txt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="124dp"
-        android:text="@string/device_1"
-        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:layout_marginBottom="16dp"
+        android:text="@string/searching"
+        android:textAlignment="center"
         android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/fab_user" />
+        app:layout_constraintBottom_toTopOf="@+id/fab"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        tools:ignore="MissingConstraints">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+            app:tabGravity="fill"
+            app:tabMode="fixed"/>
+    </android.support.design.widget.AppBarLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_device2"
+        android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
-        android:layout_marginBottom="24dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
         android:clickable="true"
-        android:visibility="invisible"
-        app:backgroundTint="@color/common_google_signin_btn_text_dark_disabled"
-        app:fabSize="mini"
-        app:layout_constraintBottom_toTopOf="@+id/fab_user"
+        android:src="@drawable/ic_people_black_24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:srcCompat="@tools:sample/avatars" />
+        android:focusable="true" />
 
 
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:layout_editor_absoluteX="354dp"
+        tools:layout_editor_absoluteY="670dp" >
+
+    </android.support.v4.view.ViewPager>
 </android.support.constraint.ConstraintLayout>
+    <!--<android.support.design.widget.FloatingActionButton-->
+        <!--android:id="@+id/fabNearBy"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginEnd="32dp"-->
+        <!--android:layout_marginBottom="32dp"-->
+        <!--android:clickable="true"-->
+        <!--android:src="@drawable/ic_people_black_24dp"-->
+        <!--app:backgroundTint="@color/colorPrimary"-->
+        <!--app:fabSize="normal"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:rippleColor="@color/common_google_signin_btn_text_dark_focused"-->
+        <!--tools:srcCompat="@tools:sample/avatars" />-->
+
+    <!--<android.support.constraint.Guideline-->
+        <!--android:id="@+id/guideline"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="vertical"-->
+        <!--app:layout_constraintGuide_begin="20dp" />-->
+
+    <!--<android.support.constraint.Guideline-->
+        <!--android:id="@+id/guideline2"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="horizontal"-->
+        <!--app:layout_constraintGuide_begin="20dp" />-->
+
+    <!--<android.support.design.widget.FloatingActionButton-->
+        <!--android:id="@+id/fab_user"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginEnd="40dp"-->
+        <!--android:layout_marginBottom="24dp"-->
+        <!--android:clickable="true"-->
+        <!--android:visibility="invisible"-->
+        <!--app:backgroundTint="@color/common_google_signin_btn_text_dark_disabled"-->
+        <!--app:fabSize="mini"-->
+        <!--app:layout_constraintBottom_toTopOf="@+id/fabNearBy"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:useCompatPadding="false"-->
+        <!--tools:fab_icon="@tools:sample/avatars[3]" />-->
+
+
+
+
+    <!--<TextView-->
+        <!--android:id="@+id/device1"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginEnd="8dp"-->
+        <!--android:layout_marginBottom="124dp"-->
+        <!--android:text="@string/device_1"-->
+        <!--android:textAppearance="@style/TextAppearance.AppCompat"-->
+        <!--android:visibility="invisible"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--app:layout_constraintEnd_toStartOf="@+id/fab_user" />-->
+
+    <!--<android.support.design.widget.FloatingActionButton-->
+        <!--android:id="@+id/fab_device2"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginEnd="40dp"-->
+        <!--android:layout_marginBottom="24dp"-->
+        <!--android:clickable="true"-->
+        <!--android:visibility="invisible"-->
+        <!--app:backgroundTint="@color/common_google_signin_btn_text_dark_disabled"-->
+        <!--app:fabSize="mini"-->
+        <!--app:layout_constraintBottom_toTopOf="@+id/fab_user"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--tools:srcCompat="@tools:sample/avatars" />-->
+
+

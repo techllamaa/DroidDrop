@@ -7,5 +7,8 @@
     <string name="device_1">Device 1</string>
     <string name="device_2">Device 2</string>
     <string name="device_3">Device 3</string>
+    <string name="shared_tab">Shared Tab</string>
+    <string name="received_tab">Received Tab</string>
+    <string name="searching">Searching for Devices</string>
 
 </resources>
