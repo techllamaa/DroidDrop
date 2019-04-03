@@ -2,8 +2,11 @@ package best.com.droiddrop;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,8 +23,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.nearby.connection.ConnectionInfo;
+import com.google.android.gms.nearby.connection.Payload;
 import com.google.android.gms.nearby.connection.Strategy;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
 public class MainActivity extends ConnectionsActivity {
@@ -333,6 +339,37 @@ public class MainActivity extends ConnectionsActivity {
                 textView.setBackgroundResource(R.color.state_unknown);
                 textView.setText(R.string.status_unknown);
                 break;
+        }
+    }
+
+    /** Starts sends data to all connected devices. */
+    private void sendData(Intent selectedFile) {
+        logV("sendData()");
+        if (selectedFile != null) {
+            Uri uri = selectedFile.getData();
+            Payload filePayload = null;
+
+            try {
+                ParcelFileDescriptor pfd = getContentResolver().openFileDescriptor(uri, "r");
+                filePayload = Payload.fromFile(pfd);
+
+                // Construct a simple message mapping the ID of the file payload to the desired filename.
+                String filenameMessage = filePayload.getId() + ":" + uri.getLastPathSegment();
+
+                // Send the filename message as a bytes payload.
+                Payload filenameBytesPayload =
+                        Payload.fromBytes(filenameMessage.getBytes(StandardCharsets.UTF_8));
+                send(filenameBytesPayload);
+
+                // Finally, send the file payload.
+                send(filePayload);
+            } catch (IOException e) {
+                logE("sendData() failed", e);
+            }
+
+
+        } else {
+            logE("sendData() failed", new Throwable("Null Intent"));
         }
     }
 
