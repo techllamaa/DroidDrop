@@ -145,6 +145,7 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
                     logD(
                             String.format(
                                     "onPayloadTransferUpdate(endpointId=%s, update=%s)", endpointId, update));
+                    onUpdate(mEstablishedConnections.get(endpointId), update);
                 }
             };
 
@@ -460,6 +461,14 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
      * @param payload The data.
      */
     protected void onReceive(Endpoint endpoint, Payload payload) {}
+
+    /**
+     * Someone connected to us needs an update on sent data. Override this method to act on the event.
+     *
+     * @param endpoint The sender.
+     * @param update Information on the data.
+     */
+    protected void onUpdate(Endpoint endpoint, PayloadTransferUpdate update) {}
 
     /**
      * An optional hook to pool any permissions the app needs with the permissions ConnectionsActivity

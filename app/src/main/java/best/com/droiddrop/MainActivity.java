@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.SimpleArrayMap;
 import android.support.v4.view.ViewCompat;
 import android.text.SpannableString;
 import android.text.format.DateFormat;
@@ -24,8 +25,10 @@ import android.widget.Toast;
 
 import com.google.android.gms.nearby.connection.ConnectionInfo;
 import com.google.android.gms.nearby.connection.Payload;
+import com.google.android.gms.nearby.connection.PayloadTransferUpdate;
 import com.google.android.gms.nearby.connection.Strategy;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
@@ -78,6 +81,12 @@ public class MainActivity extends ConnectionsActivity {
     private TextView mCurrentStateView;
 
     private TextView mDebugLogView;
+
+    /** Various maps for handling sending and recieving data**/
+    private final SimpleArrayMap<Long, Payload> incomingFilePayloads = new SimpleArrayMap<>();
+    private final SimpleArrayMap<Long, Payload> completedFilePayloads = new SimpleArrayMap<>();
+    private final SimpleArrayMap<Long, String> filePayloadFilenames = new SimpleArrayMap<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -370,6 +379,62 @@ public class MainActivity extends ConnectionsActivity {
 
         } else {
             logE("sendData() failed", new Throwable("Null Intent"));
+        }
+    }
+
+    /** {@see ConnectionsActivity#onReceive(Endpoint, Payload)} */
+    @Override
+    protected void onReceive(Endpoint endpoint, Payload payload) {
+        if (payload.getType() == Payload.Type.BYTES) {
+            String payloadFilenameMessage = new String(payload.asBytes(), StandardCharsets.UTF_8);
+            long payloadId = addPayloadFilename(payloadFilenameMessage);
+            processFilePayload(payloadId);
+        } else if (payload.getType() == Payload.Type.FILE) {
+            // Add this to our tracking map, so that we can retrieve the payload later.
+            incomingFilePayloads.put(payload.getId(), payload);
+        }
+    }
+
+    /**
+     * Extracts the payloadId and filename from the message and stores it in the
+     * filePayloadFilenames map. The format is payloadId:filename.
+     */
+    private long addPayloadFilename(String payloadFilenameMessage) {
+        String[] parts = payloadFilenameMessage.split(":");
+        long payloadId = Long.parseLong(parts[0]);
+        String filename = parts[1];
+        filePayloadFilenames.put(payloadId, filename);
+        return payloadId;
+    }
+
+
+    private void processFilePayload(long payloadId) {
+        // BYTES and FILE could be received in any order, so we call when either the BYTES or the FILE
+        // payload is completely received. The file payload is considered complete only when both have
+        // been received.
+        Payload filePayload = completedFilePayloads.get(payloadId);
+        String filename = filePayloadFilenames.get(payloadId);
+        if (filePayload != null && filename != null) {
+            completedFilePayloads.remove(payloadId);
+            filePayloadFilenames.remove(payloadId);
+
+            // Get the received file (which will be in the Downloads folder)
+            File payloadFile = filePayload.asFile().asJavaFile();
+
+            // Rename the file.
+            payloadFile.renameTo(new File(payloadFile.getParentFile(), filename));
+        }
+    }
+
+    @Override
+    public void onUpdate(Endpoint endpoint, PayloadTransferUpdate update) {
+        if (update.getStatus() == PayloadTransferUpdate.Status.SUCCESS) {
+            long payloadId = update.getPayloadId();
+            Payload payload = incomingFilePayloads.remove(payloadId);
+            completedFilePayloads.put(payloadId, payload);
+            if (payload.getType() == Payload.Type.FILE) {
+                processFilePayload(payloadId);
+            }
         }
     }
 
