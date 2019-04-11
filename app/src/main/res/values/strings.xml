@@ -9,6 +9,7 @@
     <string name="device_3">Device 3</string>
     <string name="shared_tab">Shared Tab</string>
     <string name="received_tab">Received Tab</string>
+    <string name="filepicker_tab">File Picker goes hur</string>
     <string name="searching">Searching for Devices</string>
 
 </resources>
