@@ -2,12 +2,14 @@ package best.com.droiddrop;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
@@ -94,8 +96,8 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
             new ConnectionLifecycleCallback() {
                 @Override
                 public void onConnectionInitiated(String endpointId, ConnectionInfo connectionInfo) {
-                    logD(
-                            String.format(
+
+                    logD(String.format(
                                     "onConnectionInitiated(endpointId=%s, endpointName=%s)",
                                     endpointId, connectionInfo.getEndpointName()));
                     Endpoint endpoint = new Endpoint(endpointId, connectionInfo.getEndpointName());
@@ -377,8 +379,7 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
         mIsConnecting = true;
 
         // Ask to connect
-        mConnectionsClient
-                .requestConnection(getName(), endpoint.getId(), mConnectionLifecycleCallback)
+        mConnectionsClient.requestConnection(getName(), endpoint.getId(), mConnectionLifecycleCallback)
                 .addOnFailureListener(
                         new OnFailureListener() {
                             @Override

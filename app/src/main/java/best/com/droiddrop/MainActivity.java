@@ -2,8 +2,10 @@ package best.com.droiddrop;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.net.wifi.ScanResult;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
@@ -14,12 +16,16 @@ import android.support.annotation.UiThread;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.SimpleArrayMap;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.app.AlertDialog;
 import android.text.SpannableString;
 import android.text.format.DateFormat;
 import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.ViewAnimationUtils;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +37,8 @@ import com.google.android.gms.nearby.connection.Strategy;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class MainActivity extends ConnectionsActivity {
@@ -88,10 +96,34 @@ public class MainActivity extends ConnectionsActivity {
     private final SimpleArrayMap<Long, String> filePayloadFilenames = new SimpleArrayMap<>();
 
 
+    private ListView listView;
+    private Button buttonScan;
+    private int size = 0;
+    private List<ScanResult> results;
+    private ArrayList<String> arrayList = new ArrayList<>();
+    private ArrayAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        buttonScan = findViewById(R.id.scanBtn);
+        buttonScan.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                setState(State.SEARCHING);
+            }
+
+        });
+
+        listView = findViewById(R.id.wifiList);
+
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,arrayList);
+        listView.setAdapter(adapter);
+
+
+
 
         getSupportActionBar()
                 .setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.actionBar));
@@ -111,8 +143,6 @@ public class MainActivity extends ConnectionsActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
-        setState(State.SEARCHING);
     }
 
     @Override
@@ -133,16 +163,30 @@ public class MainActivity extends ConnectionsActivity {
 
     @Override
     protected void onEndpointDiscovered(Endpoint endpoint) {
+        arrayList.add(endpoint.getName());
         stopDiscovering();
         connectToEndpoint(endpoint);
     }
 
     @Override
     protected void onConnectionInitiated(Endpoint endpoint, ConnectionInfo connectionInfo) {
+        new AlertDialog.Builder(this)
+                .setTitle("Accept connection to " + connectionInfo.getEndpointName())
+                .setMessage("Confirm the code matches on both devices: " + connectionInfo.getAuthenticationToken())
+                .setPositiveButton(
+                        "Accept",
+                        (DialogInterface dialog, int which) ->
+                                // The user confirmed, so we can accept the connection.
+                                acceptConnection(endpoint))
+                .setNegativeButton(
+                        android.R.string.cancel,
+                        (DialogInterface dialog, int which) ->
+                                // The user canceled, so we should reject the connection.
+                                rejectConnection(endpoint))
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
         // Set the color to be the same between both devices
         deviceConnectedColor = COLORS[connectionInfo.getAuthenticationToken().hashCode() % COLORS.length];
-
-        acceptConnection(endpoint);
     }
 
     @Override
@@ -197,7 +241,6 @@ public class MainActivity extends ConnectionsActivity {
         if (mCurrentAnimator != null && mCurrentAnimator.isRunning()) {
             mCurrentAnimator.cancel();
         }
-
         // Update Nearby Connections to the new state.
         switch (newState) {
             case SEARCHING:
