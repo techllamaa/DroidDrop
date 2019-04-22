@@ -9,6 +9,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.GridView;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
@@ -19,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton fab;
     private TextView testingText;
     private Intent myFileIntent;
+    private GridView myGridView;
 
 
     @Override
@@ -37,41 +39,24 @@ public class MainActivity extends AppCompatActivity {
         setupViewPager(viewPager);
         tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
-        tabLayout.getTabAt(0).setText("Shared");
-        tabLayout.getTabAt(1).setText("Received");
-        tabLayout.getTabAt(2).setText("File Pick");
+        tabLayout.getTabAt(0).setText("Near By");
+        tabLayout.getTabAt(1).setText("Shared");
+        tabLayout.getTabAt(2).setText("Received");
 
-
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-                boolean flag = true;
-                if(tab.getPosition() == 2){
-                        testingText= findViewById(R.id.pathTxt);
-                        myFileIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                        myFileIntent.setType("*/*");
-                        startActivityForResult(myFileIntent,10);
-                }
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
+        myGridView = findViewById(R.id.myGridview);
+        FileAdapter fileAdapter = new FileAdapter(this);
+        myGridView.setAdapter(fileAdapter);
 
         fab = findViewById(R.id.fab);
-        final TextView txt = findViewById(R.id.fab_txt);
+        //final TextView txt = findViewById(R.id.fab_txt);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                txt.setVisibility(View.VISIBLE);
+                //txt.setVisibility(View.VISIBLE);
+                testingText= findViewById(R.id.pathTxt);
+                myFileIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                myFileIntent.setType("*/*");
+                startActivityForResult(myFileIntent,10);
 //                Intent intent = new Intent(MainActivity.this, NewMessageActivity.class);
 //                startActivity(intent);
             }
@@ -80,9 +65,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.add(new NearByTab(), "Near By");
         adapter.add(new SharedTab(), "Shared");
         adapter.add(new ReceivedTab(), "Received");
-        adapter.add(new FilePickerTab(), "File Pick");
         viewPager.setAdapter(adapter);
     }
 
