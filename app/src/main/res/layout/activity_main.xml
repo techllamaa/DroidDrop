@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:keepScreenOn="true"
     tools:context=".MainActivity">
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -29,7 +30,6 @@
             app:tabGravity="fill" />
     </android.support.design.widget.AppBarLayout>
 
-
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
@@ -47,37 +47,19 @@
         android:focusable="true">
     </android.support.design.widget.FloatingActionButton>
 
-    <TextView
-        android:id="@+id/fab_txt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/fab"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="@string/searching"
-        android:textAlignment="center"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/fab"
-        app:layout_constraintEnd_toEndOf="parent" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/viewpager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="631dp"
         android:layout_below="@id/appBarLayout"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="-9dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="100dp" />
 
-    <GridView
-        android:id="@+id/myGridview"
-        android:layout_width="match_parent"
-        android:layout_height="633dp"
-        android:columnWidth="100dp"
-        android:numColumns="auto_fit"
-        android:stretchMode="columnWidth"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout"></GridView>
+
 </android.support.constraint.ConstraintLayout>
 
 

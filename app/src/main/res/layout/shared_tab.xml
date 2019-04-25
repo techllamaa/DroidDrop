@@ -3,13 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/shared_tab"
-    android:textSize="40dp"
-    android:textStyle="bold"
-    android:layout_centerInParent="true"/>
+    <ListView
+        android:id="@+id/sharedList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="141dp"
+        android:layout_marginEnd="0dp"
+        android:focusableInTouchMode="true" />
 
 
 </RelativeLayout>

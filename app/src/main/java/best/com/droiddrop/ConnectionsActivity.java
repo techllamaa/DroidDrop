@@ -348,6 +348,7 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
 
     /** Disconnects from all currently connected endpoints. */
     protected void disconnectFromAllEndpoints() {
+
         for (Endpoint endpoint : mEstablishedConnections.values()) {
             mConnectionsClient.disconnectFromEndpoint(endpoint.getId());
         }

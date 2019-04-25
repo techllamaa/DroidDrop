@@ -1,34 +1,25 @@
 package best.com.droiddrop;
 
 import android.animation.Animator;
-import android.animation.ObjectAnimator;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
-import android.net.wifi.ScanResult;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.support.annotation.ColorInt;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.util.SimpleArrayMap;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewAnimationUtils;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -41,10 +32,8 @@ import com.google.android.gms.nearby.connection.Strategy;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class MainActivity extends ConnectionsActivity {
@@ -53,14 +42,21 @@ public class MainActivity extends ConnectionsActivity {
     private ViewPager viewPager;
     private ViewPagerAdapter adapter;
     private FloatingActionButton fab;
-    private TextView testingText;
-    private TextView nearbytexting;
 
     private Intent myFileIntent;
-    private GridView myGridView;
     private ListView devices;
     private ArrayList<String> arrayList = new ArrayList<>();
     private ArrayAdapter listAdapter;
+    private ArrayList<Endpoint> endpointArrayList = new ArrayList<>();
+
+    private ListView files;
+    private ArrayList<String> filesArrayList = new ArrayList<>();
+    private ArrayAdapter filesListAdapter;
+
+    private ListView recieve;
+    private ArrayList<String> rArrayList = new ArrayList<>();
+    private ArrayAdapter rListAdapter;
+
 
     public static final boolean DEBUG = true;
 
@@ -167,25 +163,39 @@ public class MainActivity extends ConnectionsActivity {
                 viewPager.setCurrentItem(tab.getPosition());
                 if(tab.getPosition()==0){
                     //do near by connecting here
+                    arrayList.clear();
+                    endpointArrayList.clear();
                     setState(State.SEARCHING);
+                    Toast.makeText(getApplicationContext(), "Looking for other devices", Toast.LENGTH_SHORT).show();
+
                     devices = findViewById(R.id.nearByList);
                     listAdapter = new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_list_item_1,arrayList);
                     devices.setAdapter(listAdapter);
 
-                    devices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            nearbytexting = findViewById(R.id.testingNearBy);
-                            nearbytexting.setText("Ive been clicked");
+                    devices.setOnItemClickListener((parent, view, position, id) -> {
+                        String thing = (String) devices.getAdapter().getItem(position);
+                        Toast.makeText(getApplicationContext(), "Attempting Connection: " + thing+ " at position "+ position, Toast.LENGTH_SHORT).show();
 
-                            Log.d("","I got tapped");
-                        }
+
+                        connectToEndpoint(endpointArrayList.get(position));
                     });
+
                 }else if(tab.getPosition()==1){
                     setState(State.UNKNOWN);
+                    disconnectFromAllEndpoints();
+                    files = findViewById(R.id.sharedList);
+                    filesListAdapter = new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_list_item_1,filesArrayList);
+                    files.setAdapter(filesListAdapter);
+
+
+
                     //do add file here
                 }else{
                     setState(State.UNKNOWN);
+                    disconnectFromAllEndpoints();
+                    recieve = findViewById(R.id.recieveList);
+                    rListAdapter = new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_list_item_1,rArrayList);
+                    recieve.setAdapter(rListAdapter);
                     //tab 3
                 }
 
@@ -216,7 +226,7 @@ public class MainActivity extends ConnectionsActivity {
         switch (requestCode){
             case 10:
                 if(requestCode != RESULT_OK){
-                    sendData(myFileIntent);
+                    sendData(data);
                     String path = data.getData().getPath();
 //                    testingText= (TextView)findViewById(R.id.pathTxt);
 //                    testingText.setText(path);
@@ -232,7 +242,6 @@ public class MainActivity extends ConnectionsActivity {
     @Override
     protected void onStop() {
         setState(State.UNKNOWN);
-
         super.onStop();
     }
 
@@ -248,10 +257,7 @@ public class MainActivity extends ConnectionsActivity {
     @Override
     protected void onEndpointDiscovered(Endpoint endpoint) {
         listAdapter.add(endpoint.getName());
-        String count = Integer.toString(listAdapter.getCount());
-        Log.d("LIST ADAPTER SIZE: ",count);
-        stopDiscovering();
-        connectToEndpoint(endpoint);
+        endpointArrayList.add(endpoint);
     }
 
     @Override
@@ -277,14 +283,21 @@ public class MainActivity extends ConnectionsActivity {
 
     @Override
     protected void onEndpointConnected(Endpoint endpoint) {
-        //Toast.makeText(this, getString(R.string.toast_connected, endpoint.getName()), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Connected to: "+endpoint.getName(), Toast.LENGTH_SHORT).show();
+        toolbar.setBackgroundColor(Color.parseColor("#FF128820"));
         setState(State.CONNECTED);
+
     }
 
     @Override
     protected void onEndpointDisconnected(Endpoint endpoint) {
-        //Toast.makeText(this, getString(R.string.toast_disconnected, endpoint.getName()), Toast.LENGTH_SHORT).show();
+        toolbar.setBackgroundColor(Color.parseColor("#FF125688"));
         setState(State.SEARCHING);
+    }
+
+    @Override
+    protected void disconnectFromAllEndpoints() {
+        toolbar.setBackgroundColor(Color.parseColor("#FF125688"));
     }
 
     @Override
@@ -335,7 +348,7 @@ public class MainActivity extends ConnectionsActivity {
                 stopAdvertising();
                 break;
             case UNKNOWN:
-                stopAllEndpoints();
+                disconnectFromAllEndpoints();
                 break;
             default:
                 // no-op
@@ -475,6 +488,7 @@ public class MainActivity extends ConnectionsActivity {
 
     /** Starts sends data to all connected devices. */
     private void sendData(Intent selectedFile) {
+        filesListAdapter.add(selectedFile.toString());
         logV("sendData()");
         if (selectedFile != null) {
             Uri uri = selectedFile.getData();
@@ -512,6 +526,7 @@ public class MainActivity extends ConnectionsActivity {
             String payloadFilenameMessage = new String(payload.asBytes(), StandardCharsets.UTF_8);
             long payloadId = addPayloadFilename(payloadFilenameMessage);
             processFilePayload(payloadId);
+            rListAdapter.add(filePayloadFilenames.get(payloadId));
         } else if (payload.getType() == Payload.Type.FILE) {
             // Add this to our tracking map, so that we can retrieve the payload later.
             incomingFilePayloads.put(payload.getId(), payload);
@@ -542,10 +557,11 @@ public class MainActivity extends ConnectionsActivity {
             filePayloadFilenames.remove(payloadId);
 
             // Get the received file (which will be in the Downloads folder)
-            File payloadFile = filePayload.asFile().asJavaFile();
+            File payloadFile = new File(filePayload.asFile().asJavaFile(),filename);
 
             // Rename the file.
-            payloadFile.renameTo(new File(payloadFile.getParentFile(), filename));
+            payloadFile.renameTo(new File(payloadFile, filename));
+
         }
     }
 
