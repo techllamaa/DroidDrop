@@ -23,8 +23,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewAnimationUtils;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
@@ -52,8 +54,13 @@ public class MainActivity extends ConnectionsActivity {
     private ViewPagerAdapter adapter;
     private FloatingActionButton fab;
     private TextView testingText;
+    private TextView nearbytexting;
+
     private Intent myFileIntent;
     private GridView myGridView;
+    private ListView devices;
+    private ArrayList<String> arrayList = new ArrayList<>();
+    private ArrayAdapter listAdapter;
 
     public static final boolean DEBUG = true;
 
@@ -128,10 +135,10 @@ public class MainActivity extends ConnectionsActivity {
         tabLayout.getTabAt(0).setText("Near By");
         tabLayout.getTabAt(1).setText("Shared");
         tabLayout.getTabAt(2).setText("Received");
-
-        myGridView = findViewById(R.id.myGridview);
-        FileAdapter fileAdapter = new FileAdapter(this);
-        myGridView.setAdapter(fileAdapter);
+//
+//        myGridView = findViewById(R.id.myGridview);
+//        FileAdapter fileAdapter = new FileAdapter(this);
+//        myGridView.setAdapter(fileAdapter);
 
         fab = findViewById(R.id.fab);
         //final TextView txt = findViewById(R.id.fab_txt);
@@ -139,7 +146,7 @@ public class MainActivity extends ConnectionsActivity {
             @Override
             public void onClick(View view) {
                 //txt.setVisibility(View.VISIBLE);
-                testingText= findViewById(R.id.pathTxt);
+                //testingText= findViewById(R.id.pathTxt);
                 myFileIntent = new Intent(Intent.ACTION_GET_CONTENT);
                 myFileIntent.setType("*/*");
                 startActivityForResult(myFileIntent,10);
@@ -147,6 +154,49 @@ public class MainActivity extends ConnectionsActivity {
 //                startActivity(intent);
 
                 deviceName = generateRandodeviceName();
+
+            }
+        });
+        tabActivity();
+    }
+
+    private void tabActivity(){
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+                if(tab.getPosition()==0){
+                    //do near by connecting here
+                    setState(State.SEARCHING);
+                    devices = findViewById(R.id.nearByList);
+                    listAdapter = new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_list_item_1,arrayList);
+                    devices.setAdapter(listAdapter);
+
+                    devices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            nearbytexting = findViewById(R.id.testingNearBy);
+                            nearbytexting.setText("Ive been clicked");
+
+                            Log.d("","I got tapped");
+                        }
+                    });
+                }else if(tab.getPosition()==1){
+                    setState(State.UNKNOWN);
+                    //do add file here
+                }else{
+                    setState(State.UNKNOWN);
+                    //tab 3
+                }
+
+            }
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
 
             }
         });
@@ -166,9 +216,10 @@ public class MainActivity extends ConnectionsActivity {
         switch (requestCode){
             case 10:
                 if(requestCode != RESULT_OK){
+                    sendData(myFileIntent);
                     String path = data.getData().getPath();
-                    testingText= (TextView)findViewById(R.id.pathTxt);
-                    testingText.setText(path);
+//                    testingText= (TextView)findViewById(R.id.pathTxt);
+//                    testingText.setText(path);
                 }
                 break;
         }
@@ -196,6 +247,9 @@ public class MainActivity extends ConnectionsActivity {
 
     @Override
     protected void onEndpointDiscovered(Endpoint endpoint) {
+        listAdapter.add(endpoint.getName());
+        String count = Integer.toString(listAdapter.getCount());
+        Log.d("LIST ADAPTER SIZE: ",count);
         stopDiscovering();
         connectToEndpoint(endpoint);
     }
@@ -288,136 +342,136 @@ public class MainActivity extends ConnectionsActivity {
                 break;
         }
 
-        // Update the UI.
-        switch (oldState) {
-            case UNKNOWN:
-                // Unknown is our initial state. Whatever state we move to,
-                // we're transitioning forwards.
-                transitionForward(oldState, newState);
-                break;
-            case SEARCHING:
-                switch (newState) {
-                    case UNKNOWN:
-                        transitionBackward(oldState, newState);
-                        break;
-                    case CONNECTED:
-                        transitionForward(oldState, newState);
-                        break;
-                    default:
-                        // no-op
-                        break;
-                }
-                break;
-            case CONNECTED:
-                // Connected is our final state. Whatever new state we move to,
-                // we're transitioning backwards.
-                transitionBackward(oldState, newState);
-                break;
-        }
+//        // Update the UI.
+//        switch (oldState) {
+//            case UNKNOWN:
+//                // Unknown is our initial state. Whatever state we move to,
+//                // we're transitioning forwards.
+//                transitionForward(oldState, newState);
+//                break;
+//            case SEARCHING:
+//                switch (newState) {
+//                    case UNKNOWN:
+//                        transitionBackward(oldState, newState);
+//                        break;
+//                    case CONNECTED:
+//                        transitionForward(oldState, newState);
+//                        break;
+//                    default:
+//                        // no-op
+//                        break;
+//                }
+//                break;
+//            case CONNECTED:
+//                // Connected is our final state. Whatever new state we move to,
+//                // we're transitioning backwards.
+//                transitionBackward(oldState, newState);
+//                break;
+//        }
     }
 
-    @UiThread
-    private void transitionForward(State oldState, final State newState) {
-        mPreviousStateView.setVisibility(View.VISIBLE);
-        mCurrentStateView.setVisibility(View.VISIBLE);
+//    @UiThread
+//    private void transitionForward(State oldState, final State newState) {
+//        mPreviousStateView.setVisibility(View.VISIBLE);
+//        mCurrentStateView.setVisibility(View.VISIBLE);
+//
+//        updateTextView(mPreviousStateView, oldState);
+//        updateTextView(mCurrentStateView, newState);
+//
+//        if (ViewCompat.isLaidOut(mCurrentStateView)) {
+//            mCurrentAnimator = createAnimator(false /* reverse */);
+//            mCurrentAnimator.addListener(
+//                    new AnimatorListener() {
+//                        @Override
+//                        public void onAnimationEnd(Animator animator) {
+//                            updateTextView(mCurrentStateView, newState);
+//                        }
+//                    });
+//            mCurrentAnimator.start();
+//        }
+//    }
 
-        updateTextView(mPreviousStateView, oldState);
-        updateTextView(mCurrentStateView, newState);
+//    @UiThread
+//    private void transitionBackward(State oldState, final State newState) {
+//        mPreviousStateView.setVisibility(View.VISIBLE);
+//        mCurrentStateView.setVisibility(View.VISIBLE);
+//
+//        updateTextView(mCurrentStateView, oldState);
+//        updateTextView(mPreviousStateView, newState);
+//
+//        if (ViewCompat.isLaidOut(mCurrentStateView)) {
+//            mCurrentAnimator = createAnimator(true /* reverse */);
+//            mCurrentAnimator.addListener(
+//                    new AnimatorListener() {
+//                        @Override
+//                        public void onAnimationEnd(Animator animator) {
+//                            updateTextView(mCurrentStateView, newState);
+//                        }
+//                    });
+//            mCurrentAnimator.start();
+//        }
+//    }
 
-        if (ViewCompat.isLaidOut(mCurrentStateView)) {
-            mCurrentAnimator = createAnimator(false /* reverse */);
-            mCurrentAnimator.addListener(
-                    new AnimatorListener() {
-                        @Override
-                        public void onAnimationEnd(Animator animator) {
-                            updateTextView(mCurrentStateView, newState);
-                        }
-                    });
-            mCurrentAnimator.start();
-        }
-    }
-
-    @UiThread
-    private void transitionBackward(State oldState, final State newState) {
-        mPreviousStateView.setVisibility(View.VISIBLE);
-        mCurrentStateView.setVisibility(View.VISIBLE);
-
-        updateTextView(mCurrentStateView, oldState);
-        updateTextView(mPreviousStateView, newState);
-
-        if (ViewCompat.isLaidOut(mCurrentStateView)) {
-            mCurrentAnimator = createAnimator(true /* reverse */);
-            mCurrentAnimator.addListener(
-                    new AnimatorListener() {
-                        @Override
-                        public void onAnimationEnd(Animator animator) {
-                            updateTextView(mCurrentStateView, newState);
-                        }
-                    });
-            mCurrentAnimator.start();
-        }
-    }
-
-    @NonNull
-    private Animator createAnimator(boolean reverse) {
-        Animator animator;
-        if (Build.VERSION.SDK_INT >= 21) {
-            int cx = mCurrentStateView.getMeasuredWidth() / 2;
-            int cy = mCurrentStateView.getMeasuredHeight() / 2;
-            int initialRadius = 0;
-            int finalRadius = Math.max(mCurrentStateView.getWidth(), mCurrentStateView.getHeight());
-            if (reverse) {
-                int temp = initialRadius;
-                initialRadius = finalRadius;
-                finalRadius = temp;
-            }
-            animator =
-                    ViewAnimationUtils.createCircularReveal(
-                            mCurrentStateView, cx, cy, initialRadius, finalRadius);
-        } else {
-            float initialAlpha = 0f;
-            float finalAlpha = 1f;
-            if (reverse) {
-                float temp = initialAlpha;
-                initialAlpha = finalAlpha;
-                finalAlpha = temp;
-            }
-            mCurrentStateView.setAlpha(initialAlpha);
-            animator = ObjectAnimator.ofFloat(mCurrentStateView, "alpha", finalAlpha);
-        }
-        animator.addListener(
-                new AnimatorListener() {
-                    @Override
-                    public void onAnimationCancel(Animator animator) {
-                        mPreviousStateView.setVisibility(View.GONE);
-                        mCurrentStateView.setAlpha(1);
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animator) {
-                        mPreviousStateView.setVisibility(View.GONE);
-                        mCurrentStateView.setAlpha(1);
-                    }
-                });
-        animator.setDuration(ANIMATION_DURATION);
-        return animator;
-    }
-
-    /** Updates colors for UI */
-    @UiThread
-    private void updateTextView(TextView textView, State state) {
-        switch (state) {
-            case SEARCHING:
-
-                break;
-            case CONNECTED:
-                textView.setBackgroundColor(deviceConnectedColor);
-                break;
-            default:
-
-                break;
-        }
-    }
+//    @NonNull
+//    private Animator createAnimator(boolean reverse) {
+//        Animator animator;
+//        if (Build.VERSION.SDK_INT >= 21) {
+//            int cx = mCurrentStateView.getMeasuredWidth() / 2;
+//            int cy = mCurrentStateView.getMeasuredHeight() / 2;
+//            int initialRadius = 0;
+//            int finalRadius = Math.max(mCurrentStateView.getWidth(), mCurrentStateView.getHeight());
+//            if (reverse) {
+//                int temp = initialRadius;
+//                initialRadius = finalRadius;
+//                finalRadius = temp;
+//            }
+//            animator =
+//                    ViewAnimationUtils.createCircularReveal(
+//                            mCurrentStateView, cx, cy, initialRadius, finalRadius);
+//        } else {
+//            float initialAlpha = 0f;
+//            float finalAlpha = 1f;
+//            if (reverse) {
+//                float temp = initialAlpha;
+//                initialAlpha = finalAlpha;
+//                finalAlpha = temp;
+//            }
+//            mCurrentStateView.setAlpha(initialAlpha);
+//            animator = ObjectAnimator.ofFloat(mCurrentStateView, "alpha", finalAlpha);
+//        }
+//        animator.addListener(
+//                new AnimatorListener() {
+//                    @Override
+//                    public void onAnimationCancel(Animator animator) {
+//                        mPreviousStateView.setVisibility(View.GONE);
+//                        mCurrentStateView.setAlpha(1);
+//                    }
+//
+//                    @Override
+//                    public void onAnimationEnd(Animator animator) {
+//                        mPreviousStateView.setVisibility(View.GONE);
+//                        mCurrentStateView.setAlpha(1);
+//                    }
+//                });
+//        animator.setDuration(ANIMATION_DURATION);
+//        return animator;
+//    }
+//
+//    /** Updates colors for UI */
+//    @UiThread
+//    private void updateTextView(TextView textView, State state) {
+//        switch (state) {
+//            case SEARCHING:
+//
+//                break;
+//            case CONNECTED:
+//                textView.setBackgroundColor(deviceConnectedColor);
+//                break;
+//            default:
+//
+//                break;
+//        }
+//    }
 
     /** Starts sends data to all connected devices. */
     private void sendData(Intent selectedFile) {
