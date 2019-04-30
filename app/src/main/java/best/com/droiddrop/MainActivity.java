@@ -560,7 +560,7 @@ public class MainActivity extends ConnectionsActivity {
             File payloadFile = new File(filePayload.asFile().asJavaFile(),filename);
 
             // Rename the file.
-            payloadFile.renameTo(new File(payloadFile, filename));
+            payloadFile.renameTo(new File(payloadFile.getParentFile(), filename));
 
         }
     }
