@@ -495,17 +495,23 @@ public class MainActivity extends ConnectionsActivity {
             Uri uri = selectedFile.getData();
             Payload filePayload = null;
 
+            String uriString = uri.toString();
+            File myFile = new File(uriString);
+            String path = myFile.getAbsolutePath();
+
             try {
                 ParcelFileDescriptor pfd = getContentResolver().openFileDescriptor(uri, "r");
                 filePayload = Payload.fromFile(pfd);
 
                 // Construct a simple message mapping the ID of the file payload to the desired filename.
-                String filenameMessage = filePayload.getId() + ":" + uri.getLastPathSegment();
+//                String filenameMessage = filePayload.getId() + ":" + uri.getLastPathSegment();
+                String filenameMessage = filePayload.getId() + ":" + myFile.toString();
 
                 // Send the filename message as a bytes payload.
                 Payload filenameBytesPayload =
                         Payload.fromBytes(filenameMessage.getBytes(StandardCharsets.UTF_8));
                 send(filenameBytesPayload);
+
 
                 // Finally, send the file payload.
                 System.out.println("Filename at sendData: " + filenameMessage);
