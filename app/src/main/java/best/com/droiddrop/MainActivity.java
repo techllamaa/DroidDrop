@@ -3,10 +3,12 @@ package best.com.droiddrop;
 import android.animation.Animator;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
+import android.provider.OpenableColumns;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -495,6 +497,7 @@ public class MainActivity extends ConnectionsActivity {
             Uri uri = selectedFile.getData();
             Payload filePayload = null;
 
+            String displayName = null;
             String uriString = uri.toString();
             File myFile = new File(uriString);
             String path = myFile.getAbsolutePath();
@@ -505,7 +508,23 @@ public class MainActivity extends ConnectionsActivity {
 
                 // Construct a simple message mapping the ID of the file payload to the desired filename.
 //                String filenameMessage = filePayload.getId() + ":" + uri.getLastPathSegment();
-                String filenameMessage = filePayload.getId() + ":" + myFile.toString();
+
+
+                if (uriString.startsWith("content://")) {
+                    Cursor cursor = null;
+                    try {
+                        cursor = getContentResolver().query(uri, null, null, null, null);
+                        if (cursor != null && cursor.moveToFirst()) {
+                            displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                        }
+                    } finally {
+                        cursor.close();
+                    }
+                } else if (uriString.startsWith("file://")) {
+                    displayName = myFile.getName();
+                }
+
+                String filenameMessage = filePayload.getId() + ":" + displayName;
 
                 // Send the filename message as a bytes payload.
                 Payload filenameBytesPayload =
