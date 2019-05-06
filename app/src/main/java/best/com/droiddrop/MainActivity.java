@@ -565,6 +565,7 @@ public class MainActivity extends ConnectionsActivity {
         }
     }
 
+    @Override
     public void onUpdate(Endpoint endpoint, PayloadTransferUpdate update) {
         if (update.getStatus() == PayloadTransferUpdate.Status.SUCCESS) {
             long payloadId = update.getPayloadId();

@@ -145,6 +145,7 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
                     logD(
                             String.format(
                                     "onPayloadTransferUpdate(endpointId=%s, update=%s)", endpointId, update));
+                    onUpdate(mEstablishedConnections.get(endpointId), update);
                 }
             };
 
@@ -471,6 +472,14 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
     protected String[] getRequiredPermissions() {
         return REQUIRED_PERMISSIONS;
     }
+
+    /**
+     * Someone connected to us needs an update on sent data. Override this method to act on the event.
+     *
+     * @param endpoint The sender.
+     * @param update Information on the data.
+     */
+    protected void onUpdate(Endpoint endpoint, PayloadTransferUpdate update) {}
 
     /** Returns the client's name. Visible to others when connecting. */
     protected abstract String getName();
