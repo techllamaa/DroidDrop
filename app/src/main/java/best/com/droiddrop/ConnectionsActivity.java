@@ -55,6 +55,7 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
                     Manifest.permission.ACCESS_WIFI_STATE,
                     Manifest.permission.CHANGE_WIFI_STATE,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
             };
 
     private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
