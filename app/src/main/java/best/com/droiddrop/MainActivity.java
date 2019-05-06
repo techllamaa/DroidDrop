@@ -571,7 +571,7 @@ public class MainActivity extends ConnectionsActivity {
             long payloadId = update.getPayloadId();
             Payload payload = incomingFilePayloads.remove(payloadId);
             completedFilePayloads.put(payloadId, payload);
-            if (payload.getType() == Payload.Type.FILE) {
+            if (payload != null && payload.getType() == Payload.Type.FILE) {
                 processFilePayload(payloadId);
             }
         }
