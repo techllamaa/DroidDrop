@@ -217,7 +217,7 @@ public class MainActivity extends ConnectionsActivity {
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.add(new NearByTab(), "Near By");
+        adapter.add(new NearByTab(), "Nearby");
         adapter.add(new SharedTab(), "Shared");
         adapter.add(new ReceivedTab(), "Received");
         viewPager.setAdapter(adapter);
@@ -500,7 +500,7 @@ public class MainActivity extends ConnectionsActivity {
             String displayName = null;
             String uriString = uri.toString();
             File myFile = new File(uriString);
-            String path = myFile.getAbsolutePath();
+//            String path = myFile.getAbsolutePath();
 
             try {
                 ParcelFileDescriptor pfd = getContentResolver().openFileDescriptor(uri, "r");
@@ -531,9 +531,9 @@ public class MainActivity extends ConnectionsActivity {
                         Payload.fromBytes(filenameMessage.getBytes(StandardCharsets.UTF_8));
                 send(filenameBytesPayload);
 
+                System.out.println("Filename at sendData: " + filenameMessage);
 
                 // Finally, send the file payload.
-                System.out.println("Filename at sendData: " + filenameMessage);
                 send(filePayload);
             } catch (IOException e) {
                 logE("sendData() failed", e);
@@ -551,6 +551,9 @@ public class MainActivity extends ConnectionsActivity {
         if (payload.getType() == Payload.Type.BYTES) {
             String payloadFilenameMessage = new String(payload.asBytes(), StandardCharsets.UTF_8);
             long payloadId = addPayloadFilename(payloadFilenameMessage);
+
+            System.out.println("Filename at sendData: " + payloadFilenameMessage);
+
             processFilePayload(payloadId);
             rListAdapter.add(filePayloadFilenames.get(payloadId));
         } else if (payload.getType() == Payload.Type.FILE) {
