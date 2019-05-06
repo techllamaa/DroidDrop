@@ -32,6 +32,7 @@ import com.google.android.gms.nearby.connection.Strategy;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Random;
@@ -489,29 +490,29 @@ public class MainActivity extends ConnectionsActivity {
     /** Starts sends data to all connected devices. */
     private void sendData(Intent selectedFile) {
         filesListAdapter.add(selectedFile.toString());
-        logV("sendData()");
+
         if (selectedFile != null) {
             Uri uri = selectedFile.getData();
             Payload filePayload = null;
 
-            ParcelFileDescriptor pfd = null;
             try {
-                pfd = getContentResolver().openFileDescriptor(uri, "r");
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+                ParcelFileDescriptor pfd = getContentResolver().openFileDescriptor(uri, "r");
+                filePayload = Payload.fromFile(pfd);
+
+                // Construct a simple message mapping the ID of the file payload to the desired filename.
+                String filenameMessage = filePayload.getId() + ":" + uri.getLastPathSegment();
+
+                // Send the filename message as a bytes payload.
+                Payload filenameBytesPayload =
+                        Payload.fromBytes(filenameMessage.getBytes(StandardCharsets.UTF_8));
+                send(filenameBytesPayload);
+
+                // Finally, send the file payload.
+                System.out.println("Filename at sendData: " + filenameMessage);
+                send(filePayload);
+            } catch (IOException e) {
+                logE("sendData() failed", e);
             }
-            filePayload = Payload.fromFile(pfd);
-
-            // Construct a simple message mapping the ID of the file payload to the desired filename.
-            String filenameMessage = filePayload.getId() + ":" + uri.getLastPathSegment();
-
-            // Send the filename message as a bytes payload.
-            Payload filenameBytesPayload =
-                    Payload.fromBytes(filenameMessage.getBytes(StandardCharsets.UTF_8));
-            send(filenameBytesPayload);
-
-            // Finally, send the file payload.
-            send(filePayload);
 
 
         } else {
