@@ -541,6 +541,7 @@ public class MainActivity extends ConnectionsActivity {
         String[] parts = payloadFilenameMessage.split(":");
         long payloadId = Long.parseLong(parts[0]);
         String filename = parts[1];
+        System.out.println("The filename at method addPayloadFilename is: " + filename);
         filePayloadFilenames.put(payloadId, filename);
         return payloadId;
     }
@@ -552,6 +553,7 @@ public class MainActivity extends ConnectionsActivity {
         // been received.
         Payload filePayload = completedFilePayloads.get(payloadId);
         String filename = filePayloadFilenames.get(payloadId);
+        System.out.println("The filename at processFilePayload is: " + filename);
         if (filePayload != null && filename != null) {
             completedFilePayloads.remove(payloadId);
             filePayloadFilenames.remove(payloadId);
