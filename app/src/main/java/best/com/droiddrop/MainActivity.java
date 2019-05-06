@@ -591,7 +591,13 @@ public class MainActivity extends ConnectionsActivity {
             File payloadFile = filePayload.asFile().asJavaFile();
 
             // Rename the file.
-            payloadFile.renameTo(new File(payloadFile.getParentFile(), filename));
+            boolean namedChange = payloadFile.renameTo(new File(payloadFile.getParentFile(), filename));
+
+            if (namedChange) {
+                System.out.println("Name succesfully changed");
+            } else {
+                System.out.println("Name not changed");
+            }
         }
     }
 
