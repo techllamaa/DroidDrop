@@ -557,11 +557,10 @@ public class MainActivity extends ConnectionsActivity {
             filePayloadFilenames.remove(payloadId);
 
             // Get the received file (which will be in the Downloads folder)
-            File payloadFile = new File(filePayload.asFile().asJavaFile(),filename);
+            File payloadFile = filePayload.asFile().asJavaFile();
 
             // Rename the file.
             payloadFile.renameTo(new File(payloadFile.getParentFile(), filename));
-
         }
     }
 
