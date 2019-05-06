@@ -590,6 +590,11 @@ public class MainActivity extends ConnectionsActivity {
             // Get the received file (which will be in the Downloads folder)
             File payloadFile = filePayload.asFile().asJavaFile();
 
+            if (payloadFile.canWrite()) {
+                System.out.println("This is a writable file");
+            } else {
+                System.out.println("This is not a writable file");
+            }
             // Rename the file.
             boolean namedChange = payloadFile.renameTo(new File(payloadFile.getParentFile(), filename));
 
