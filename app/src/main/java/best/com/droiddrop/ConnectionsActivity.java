@@ -55,6 +55,9 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
                     Manifest.permission.ACCESS_WIFI_STATE,
                     Manifest.permission.CHANGE_WIFI_STATE,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
             };
 
     private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
@@ -145,6 +148,7 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
                     logD(
                             String.format(
                                     "onPayloadTransferUpdate(endpointId=%s, update=%s)", endpointId, update));
+                    onUpdate(mEstablishedConnections.get(endpointId), update);
                 }
             };
 
@@ -348,6 +352,7 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
 
     /** Disconnects from all currently connected endpoints. */
     protected void disconnectFromAllEndpoints() {
+
         for (Endpoint endpoint : mEstablishedConnections.values()) {
             mConnectionsClient.disconnectFromEndpoint(endpoint.getId());
         }
@@ -470,6 +475,14 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
     protected String[] getRequiredPermissions() {
         return REQUIRED_PERMISSIONS;
     }
+
+    /**
+     * Someone connected to us needs an update on sent data. Override this method to act on the event.
+     *
+     * @param endpoint The sender.
+     * @param update Information on the data.
+     */
+    protected void onUpdate(Endpoint endpoint, PayloadTransferUpdate update) {}
 
     /** Returns the client's name. Visible to others when connecting. */
     protected abstract String getName();
