@@ -1,6 +1,7 @@
 package best.com.droiddrop;
 
 import android.animation.Animator;
+import android.app.DownloadManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -60,7 +61,12 @@ public class MainActivity extends ConnectionsActivity {
     private ArrayList<String> rArrayList = new ArrayList<>();
     private ArrayAdapter rListAdapter;
 
+    private TextView sEmpty;
+    private TextView rEmpty;
+    private TextView nEmpty;
 
+    private ArrayList<Intent> sendIntent = new ArrayList<>();
+    private ArrayList<Intent> rIntent = new ArrayList<>();
     public static final boolean DEBUG = true;
 
     /** P2P_STAR is the higher bandwidth connection type*/
@@ -151,6 +157,7 @@ public class MainActivity extends ConnectionsActivity {
                 startActivityForResult(myFileIntent,10);
 //                Intent intent = new Intent(MainActivity.this, NewMessageActivity.class);
 //                startActivity(intent);
+                sendIntent.add(myFileIntent);
 
                 deviceName = generateRandodeviceName();
 
@@ -177,11 +184,18 @@ public class MainActivity extends ConnectionsActivity {
 
                     devices.setOnItemClickListener((parent, view, position, id) -> {
                         String thing = (String) devices.getAdapter().getItem(position);
-                        Toast.makeText(getApplicationContext(), "Attempting Connection: " + thing+ " at position "+ position, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Attempting Connection: " + thing, Toast.LENGTH_SHORT).show();
 
 
                         connectToEndpoint(endpointArrayList.get(position));
                     });
+                    nEmpty = findViewById(R.id.nearbyEmpty);
+                    if (listAdapter.isEmpty()){
+                        nEmpty.setVisibility(View.VISIBLE);
+                    }
+                    else{
+                        nEmpty.setVisibility(View.INVISIBLE);
+                    }
 
                 }else if(tab.getPosition()==1){
                     setState(State.UNKNOWN);
@@ -189,8 +203,19 @@ public class MainActivity extends ConnectionsActivity {
                     files = findViewById(R.id.sharedList);
                     filesListAdapter = new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_list_item_1,filesArrayList);
                     files.setAdapter(filesListAdapter);
-
-
+                    files.setOnItemClickListener((parent, view, position, id) -> {
+                        //startActivity(new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS));
+                        String thing = (String) files.getAdapter().getItem(position);
+                        Intent sendFile = (Intent) sendIntent.get(position);
+                        startActivity(sendFile);
+                    });
+                    sEmpty = findViewById(R.id.sharedEmpty);
+                    if (filesListAdapter.isEmpty()){
+                        sEmpty.setVisibility(View.VISIBLE);
+                    }
+                    else{
+                        sEmpty.setVisibility(View.INVISIBLE);
+                    }
 
                     //do add file here
                 }else{
@@ -199,7 +224,16 @@ public class MainActivity extends ConnectionsActivity {
                     recieve = findViewById(R.id.recieveList);
                     rListAdapter = new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_list_item_1,rArrayList);
                     recieve.setAdapter(rListAdapter);
+                    recieve.setOnItemClickListener((parent, view, position, id) -> {
+                        startActivity(rIntent.get(position));
+                    });
                     //tab 3
+                    rEmpty = findViewById(R.id.receivedEmpty);
+                    if (rListAdapter.isEmpty()){
+                        rEmpty.setVisibility(View.VISIBLE);
+                    }else{
+                        rEmpty.setVisibility(View.INVISIBLE);
+                    }
                 }
 
             }
@@ -491,8 +525,6 @@ public class MainActivity extends ConnectionsActivity {
 
     /** Starts sends data to all connected devices. */
     private void sendData(Intent selectedFile) {
-        filesListAdapter.add(selectedFile.toString());
-
         if (selectedFile != null) {
             Uri uri = selectedFile.getData();
             Payload filePayload = null;
@@ -500,7 +532,7 @@ public class MainActivity extends ConnectionsActivity {
             String displayName = null;
             String uriString = uri.toString();
             File myFile = new File(uriString);
-//            String path = myFile.getAbsolutePath();
+            String path = myFile.getAbsolutePath();
 
             try {
                 ParcelFileDescriptor pfd = getContentResolver().openFileDescriptor(uri, "r");
@@ -532,7 +564,11 @@ public class MainActivity extends ConnectionsActivity {
                 send(filenameBytesPayload);
 
                 System.out.println("Filename at sendData: " + filenameMessage);
+                filesListAdapter.add(displayName);
 
+
+
+                Toast.makeText(getApplicationContext(), "Hold tight we're sending "+ displayName, Toast.LENGTH_LONG).show();
                 // Finally, send the file payload.
                 send(filePayload);
             } catch (IOException e) {
@@ -556,6 +592,7 @@ public class MainActivity extends ConnectionsActivity {
 
             processFilePayload(payloadId);
             rListAdapter.add(filePayloadFilenames.get(payloadId));
+            Toast.makeText(getApplicationContext(), "Whoa we're getting a file; "+ filePayloadFilenames.get(payloadId), Toast.LENGTH_LONG).show();
         } else if (payload.getType() == Payload.Type.FILE) {
             // Add this to our tracking map, so that we can retrieve the payload later.
             incomingFilePayloads.put(payload.getId(), payload);
@@ -597,6 +634,14 @@ public class MainActivity extends ConnectionsActivity {
             }
             // Rename the file.
             boolean namedChange = payloadFile.renameTo(new File(payloadFile.getParentFile(), filename));
+
+            Toast.makeText(getApplicationContext(),  "Completed transfer: "+filename, Toast.LENGTH_LONG).show();
+
+            Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
+            Uri data = Uri.fromFile(new File(payloadFile.getParentFile()+"/"+filename));
+            System.out.println(data.getPath());
+            intent.setDataAndType(data,"image/*|application/pdf|audio/*|video/mp4");
+            rIntent.add(intent);
 
             if (namedChange) {
                 System.out.println("Name succesfully changed");
